@@ -2,8 +2,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
 /** Rotas de auth que devem ir pelo proxy no mesmo domínio (evita CORS). */
 const AUTH_PROXY_PATHS: Record<string, string> = {
-  '/api/auth/register': '/api/backend-auth/register',
-  '/api/auth/login': '/api/backend-auth/login',
+  '/api/auth/register': '/api/register',
+  '/api/auth/login': '/api/login',
 };
 
 /**
