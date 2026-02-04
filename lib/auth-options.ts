@@ -1,8 +1,7 @@
-import NextAuth from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import type { NextAuthOptions } from 'next-auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -84,6 +83,3 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: '/auth/login' },
   secret: process.env.NEXTAUTH_SECRET || (process.env.NODE_ENV === 'development' ? 'habithub-dev-secret-change-in-production' : undefined),
 };
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };

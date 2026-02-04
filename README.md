@@ -21,9 +21,10 @@ Sistema web que permite rastrear hábitos, visualizar analytics preditivos e rec
 
 ```
 habithub-analytics/
-├── frontend/          # Next.js 15
-├── backend/           # Express + TypeScript
-├── ml-service/        # Python/Flask (opcional)
+├── app/               # Next.js 15 (App Router) — na raiz para Vercel
+├── components/        # Componentes React
+├── lib/               # API, hooks
+├── backend/           # Express + TypeScript (API)
 ├── docker-compose.yml
 └── README.md
 ```
@@ -60,17 +61,16 @@ npm run db:migrate   # cria tabelas no PostgreSQL
 npm run dev
 ```
 
-### 4. Frontend
+### 4. Frontend (raiz do repositório)
 
-Crie `frontend/.env.local` com as variáveis de NextAuth (copie de `.env.example` na raiz).
+Crie `.env.local` na raiz com as variáveis de NextAuth (copie de `.env.example`).
 
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
 
-**Nota:** Para login com Google/GitHub, configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` e `NEXTAUTH_SECRET` no `.env.local` do frontend. O backend precisa de `DATABASE_URL` (PostgreSQL) e `JWT_SECRET`.
+**Nota:** Para login com Google/GitHub, configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` e `NEXTAUTH_SECRET` no `.env.local`. O backend precisa de `DATABASE_URL` (PostgreSQL) e `JWT_SECRET`.
 
 - Frontend: http://localhost:3000  
 - Backend API: http://localhost:4000  
@@ -104,13 +104,9 @@ Documentação completa: **Swagger/OpenAPI** em `/api-docs`.
 - **Backend**: Railway ou Render
 - **Bancos**: Neon (PostgreSQL), MongoDB Atlas, Redis (Upstash ou similar)
 
-### ⚠️ 404 na Vercel (página em branco ou NOT_FOUND)
+### Deploy na Vercel
 
-O app Next.js fica na pasta **`frontend/`**. Se a **Root Directory** na Vercel não for ajustada, o site retorna **404**.
-
-**Solução (obrigatória):** em **[vercel.com](https://vercel.com)** → seu projeto → **Settings** → **General** → **Root Directory** → **Edit** → digite **`frontend`** → **Save** → **Deployments** → **Redeploy**.
-
-Guia passo a passo: **[VERCEL_DEPLOY.md](./VERCEL_DEPLOY.md)**.
+O Next.js está na **raiz** do repositório (`app/`, `package.json`, etc.), então a Vercel detecta e faz o build sem precisar configurar Root Directory.
 
 ## Licença
 
