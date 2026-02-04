@@ -14,6 +14,8 @@ Assim o Railway passa a usar só a pasta **backend/** (onde está o `package.jso
 
 ## Variáveis de ambiente no Railway
 
+**Se aparecer "Banco de dados não configurado"** → siga o guia **[RAILWAY_DATABASE.md](./RAILWAY_DATABASE.md)** para criar o PostgreSQL e definir **DATABASE_URL**.
+
 No **Variables** do service, configure pelo menos:
 
 - **DATABASE_URL** — connection string do PostgreSQL (obrigatório; sem isso o cadastro/login retorna 500/503)
