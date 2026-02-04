@@ -1,8 +1,10 @@
 # Deploy na Vercel
 
-## 1. Root Directory (evitar 404)
+## 1. Root Directory (obrigatório — evita 404 em páginas e em /api/backend-auth/*)
 
-O app Next.js está na pasta **`frontend/`**. Configure **Root Directory** = **`frontend`** em **Settings** → **Build and Deployment** (ou **General**) → **Root Directory** → **Edit** → **`frontend`** → **Save**. Depois faça **Redeploy**.
+O app Next.js está na pasta **`frontend/`**. Se a Vercel buildar a partir da **raiz** do repositório, você verá **404** em rotas como `/api/backend-auth/register` e nas páginas do app.
+
+**Como configurar:** no projeto na Vercel → **Settings** → **Build and Deployment** (ou **General**) → **Root Directory** → **Edit** → digite **`frontend`** (só a palavra, sem barra) → **Save**. Depois faça **Redeploy**.
 
 ---
 
