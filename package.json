@@ -1,0 +1,11 @@
+{
+  "name": "habithub-analytics-root",
+  "private": true,
+  "scripts": {
+    "build": "cd backend && npm ci && npm run build",
+    "start": "cd backend && npm run start"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
