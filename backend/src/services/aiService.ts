@@ -36,7 +36,7 @@ export async function buildAskContext(userId: string): Promise<AskContext> {
   const habitsSummary =
     habits.length === 0
       ? 'O usuário ainda não cadastrou hábitos.'
-      : `Hábitos: ${habits.map((h) => `${h.name}${h.category ? ` (${h.category})` : ''}`).join(', ')}.`;
+      : `Hábitos: ${habits.map((h: { name: string; category: string | null }) => `${h.name}${h.category ? ` (${h.category})` : ''}`).join(', ')}.`;
 
   const byHabit: Record<string, { total: number; completed: number; moods: string[] }> = {};
   for (const log of logs) {
@@ -48,7 +48,7 @@ export async function buildAskContext(userId: string): Promise<AskContext> {
 
   const byDow: Record<number, { total: number; completed: number }> = {};
   for (let i = 0; i < 7; i++) byDow[i] = { total: 0, completed: 0 };
-  for (const l of logs) {
+  for (const l of logs as { date: string; completed: boolean }[]) {
     const d = new Date(l.date).getDay();
     byDow[d].total++;
     if (l.completed) byDow[d].completed++;
@@ -59,12 +59,12 @@ export async function buildAskContext(userId: string): Promise<AskContext> {
     .sort((a, b) => b.rate - a.rate)[0];
 
   const totalLogs = logs.length;
-  const completedLogs = logs.filter((l) => l.completed).length;
+  const completedLogs = logs.filter((l: { completed: boolean }) => l.completed).length;
   const successRate = totalLogs > 0 ? Math.round((completedLogs / totalLogs) * 100) : 0;
 
   let currentStreak = 0;
   const today = new Date().toISOString().slice(0, 10);
-  const completedDates = new Set(logs.filter((l) => l.completed).map((l) => l.date));
+  const completedDates = new Set(logs.filter((l: { completed: boolean }) => l.completed).map((l: { date: string }) => l.date));
   for (let d = new Date(today); ; d.setDate(d.getDate() - 1)) {
     const ds = d.toISOString().slice(0, 10);
     if (completedDates.has(ds)) currentStreak++;

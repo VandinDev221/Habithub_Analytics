@@ -24,7 +24,8 @@ export async function exportData(req: Request, res: Response, next: NextFunction
     if (format === 'json') {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', 'attachment; filename="habithub-export.json"');
-      return res.json({ habits, logs });
+      res.json({ habits, logs });
+      return;
     }
 
     const csvLines = ['habit_id,habit_name,date,completed,mood,notes'];

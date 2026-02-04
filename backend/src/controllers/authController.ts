@@ -28,7 +28,7 @@ export async function register(req: Request, res: Response, next: NextFunction):
     const token = jwt.sign(
       { userId: user.id, email: user.email } as JwtPayload,
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES }
+      { expiresIn: JWT_EXPIRES } as jwt.SignOptions
     );
     res.status(201).json({ user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar }, token });
   } catch (e) {
@@ -64,7 +64,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
     const token = jwt.sign(
       { userId: user.id, email: user.email } as JwtPayload,
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES }
+      { expiresIn: JWT_EXPIRES } as jwt.SignOptions
     );
     res.json({
       user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar },
@@ -104,7 +104,7 @@ export async function oauthUser(req: Request, res: Response, next: NextFunction)
     const token = jwt.sign(
       { userId: user.id, email: user.email } as JwtPayload,
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES }
+      { expiresIn: JWT_EXPIRES } as jwt.SignOptions
     );
     res.json({ user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar }, token });
   } catch (e) {

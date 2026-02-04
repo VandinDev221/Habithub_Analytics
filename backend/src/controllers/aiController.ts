@@ -33,7 +33,7 @@ export async function getInsights(req: Request, res: Response, next: NextFunctio
       .sort((a, b) => b.rate - a.rate)[0];
 
     const total = logs.length;
-    const completed = logs.filter((l) => l.completed).length;
+    const completed = logs.filter((l: { completed: boolean }) => l.completed).length;
     const prob = total > 0 ? Math.round((completed / total) * 100) : 50;
 
     const insights: string[] = [];

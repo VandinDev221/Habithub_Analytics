@@ -31,18 +31,18 @@ export async function getAnalytics(req: Request, res: Response, next: NextFuncti
     }
 
     const categoryCount: Record<string, number> = {};
-    for (const h of habits) {
+    for (const h of habits as { category?: string | null }[]) {
       const cat = h.category ?? 'Outros';
       categoryCount[cat] = (categoryCount[cat] ?? 0) + 1;
     }
 
-    const totalCompleted = logs.filter((l) => l.completed).length;
-    const totalDays = new Set(logs.map((l) => l.date)).size;
+    const totalCompleted = logs.filter((l: { completed: boolean }) => l.completed).length;
+    const totalDays = new Set(logs.map((l: { date: string }) => l.date)).size;
     const successRate = totalDays > 0 ? Math.round((totalCompleted / (totalDays * habits.length || 1)) * 100) : 0;
 
     let currentStreak = 0;
     const today = new Date().toISOString().slice(0, 10);
-    const datesSet = new Set(logs.filter((l) => l.completed).map((l) => l.date));
+    const datesSet = new Set(logs.filter((l: { completed: boolean }) => l.completed).map((l: { date: string }) => l.date));
     for (let d = new Date(today); ; d.setDate(d.getDate() - 1)) {
       const ds = d.toISOString().slice(0, 10);
       if (datesSet.has(ds)) currentStreak++;
