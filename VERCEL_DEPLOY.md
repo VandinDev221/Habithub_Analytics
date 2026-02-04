@@ -1,20 +1,33 @@
-# Deploy na Vercel — Corrigir 404
+# Deploy na Vercel
 
-O app Next.js está na pasta **`frontend/`**. Se a Vercel buildar a raiz do repo, o site retorna **404**. É obrigatório configurar **Root Directory**.
+## 1. Root Directory (evitar 404)
 
-## Onde configurar (uma vez)
+O app Next.js está na pasta **`frontend/`**. Configure **Root Directory** = **`frontend`** em **Settings** → **Build and Deployment** (ou **General**) → **Root Directory** → **Edit** → **`frontend`** → **Save**. Depois faça **Redeploy**.
 
-1. Abra: **https://vercel.com** → seu time → projeto **habithub-analytics** → aba **Settings**.
-2. No menu lateral, clique em **General** (ou **Build and Deployment**).
-3. Role até achar **Root Directory**.
-   - Se não aparecer: na própria página de Settings, use a **caixa de busca** (se existir) e digite **Root** — o campo Root Directory deve ser listado.
-4. Clique em **Edit** ao lado de Root Directory.
-5. Digite exatamente: **`frontend`** (sem barra no final).
-6. **Save**.
-7. Vá em **Deployments** → no último deploy, clique nos **três pontinhos (⋯)** → **Redeploy**.
+---
 
-Sem **Root Directory** = **`frontend`**, a Vercel não acha o Next.js e o site continua em 404.
+## 2. Variáveis de ambiente (evitar 500 em /api/auth/session e ERR_CONNECTION_REFUSED)
 
-## Na raiz do repo
+Em **Settings** → **Environment Variables**, adicione as variáveis abaixo. Use **Production** (e, se quiser, Preview) para cada uma.
 
-Há um **`package.json`** e **`vercel.json`** na raiz com comandos que rodam em `frontend/`. Eles não substituem o Root Directory: o painel precisa estar com **Root Directory** = **`frontend`** para o deploy funcionar.
+### Obrigatórias para o site não quebrar
+
+| Nome | Valor | Observação |
+|------|--------|------------|
+| **NEXTAUTH_URL** | `https://habithub-analytics.vercel.app` | URL do seu site na Vercel (troque pelo seu domínio se for outro). |
+| **NEXTAUTH_SECRET** | uma string longa e aleatória | Gere com: `openssl rand -base64 32` no terminal. Sem isso, `/api/auth/session` pode retornar **500**. |
+| **NEXT_PUBLIC_API_URL** | URL do seu backend em produção | Ex.: `https://sua-api.railway.app` ou `https://sua-api.onrender.com`. **Não** use `http://localhost:4000` em produção, senão aparece **ERR_CONNECTION_REFUSED** ao registrar/login. |
+
+### Opcionais (login com Google/GitHub)
+
+- **GOOGLE_CLIENT_ID** e **GOOGLE_CLIENT_SECRET**
+- **GITHUB_CLIENT_ID** e **GITHUB_CLIENT_SECRET**
+
+Depois de salvar as variáveis, faça um **Redeploy** para elas valerem.
+
+---
+
+## Resumo dos erros
+
+- **500 em `/api/auth/session`** → falta **NEXTAUTH_SECRET** ou **NEXTAUTH_URL** errado (tem que ser a URL do site na Vercel).
+- **ERR_CONNECTION_REFUSED em localhost:4000** → em produção **NEXT_PUBLIC_API_URL** tem que apontar para o backend deployado (Railway, Render, etc.), não para `localhost:4000`. Se o backend ainda não estiver em produção, cadastro e login por email vão falhar até você subir a API e colocar a URL aqui.

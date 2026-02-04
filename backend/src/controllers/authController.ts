@@ -8,7 +8,12 @@ import type { JwtPayload } from '../middleware/auth.js';
 
 export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { email, password, name } = req.body;
+    const body = req.body;
+    if (!body || typeof body !== 'object') {
+      next(new AppError(400, 'Corpo da requisição inválido. Envie JSON com email e senha.'));
+      return;
+    }
+    const { email, password, name } = body;
     if (!email?.trim() || !password) {
       next(new AppError(400, 'Email e senha são obrigatórios'));
       return;
@@ -38,7 +43,12 @@ export async function register(req: Request, res: Response, next: NextFunction):
 
 export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { email, password } = req.body;
+    const body = req.body;
+    if (!body || typeof body !== 'object') {
+      next(new AppError(400, 'Corpo da requisição inválido. Envie JSON com email e senha.'));
+      return;
+    }
+    const { email, password } = body;
     if (!email?.trim() || !password) {
       next(new AppError(400, 'Email e senha são obrigatórios'));
       return;
