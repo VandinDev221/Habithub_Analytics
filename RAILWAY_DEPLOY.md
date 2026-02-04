@@ -22,4 +22,4 @@ No **Variables** do service, configure pelo menos:
 - **OPENAI_API_KEY** (se for usar “Pergunte sobre seus hábitos”)
 - **PORT** — o Railway costuma injetar; se precisar, use a variável que eles indicam (ex.: `PORT`)
 
-Depois do deploy, use a URL gerada pelo Railway (ex.: `https://habithub-analytics-production.up.railway.app`) como **NEXT_PUBLIC_API_URL** nas variáveis do frontend na Vercel.
+Depois do deploy, use a URL gerada pelo Railway (ex.: `https://habithubanalytics-production.up.railway.app`) como **NEXT_PUBLIC_API_URL** nas variáveis do frontend na Vercel. Sem barra no final.
