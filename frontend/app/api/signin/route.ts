@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
-/** Proxy público para login (evita CORS). */
+/** Proxy público para login (evita CORS). POST /api/signin */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
@@ -18,8 +18,14 @@ export async function POST(req: NextRequest) {
       headers: { 'Content-Type': contentType },
     });
   } catch (err) {
-    console.error('[api/login]', err);
-    const message = err instanceof Error ? err.message : 'Erro ao conectar ao servidor';
-    return NextResponse.json({ error: message }, { status: 502 });
+    console.error('[api/signin]', err);
+    const message = err instanceof Error ? err.message : String(err);
+    const hint = message.includes('fetch') || message.includes('ECONNREFUSED')
+      ? ' Backend inacessível — confira NEXT_PUBLIC_API_URL e se a API está no ar. Use GET /api/backend-ping para testar.'
+      : '';
+    return NextResponse.json(
+      { error: `Erro ao conectar ao servidor: ${message}.${hint}` },
+      { status: 502 }
+    );
   }
 }

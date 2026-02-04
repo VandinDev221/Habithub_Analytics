@@ -14,6 +14,12 @@ const nextConfig = {
       { source: '/favicon.png', destination: '/icon.svg', permanent: false },
     ];
   },
+  async rewrites() {
+    return [
+      { source: '/api/register', destination: '/api/signup' },
+      { source: '/api/login', destination: '/api/signin' },
+    ];
+  },
 };
 
 module.exports = nextConfig;

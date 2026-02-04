@@ -44,4 +44,15 @@
 
 ---
 
+## Conferir se o frontend fala com o backend
+
+Depois do deploy, abra no navegador:
+
+**`https://habithub-analytics.vercel.app/api/backend-ping`**
+
+- Se retornar **`{"ok":true,"backend":true,...}`** → a Vercel está conseguindo chamar o backend (Railway). Cadastro e login devem funcionar.
+- Se retornar **`{"ok":false,"error":"Backend inacessível..."}`** → confira **NEXT_PUBLIC_API_URL** (URL do backend sem barra no final) e se a API está no ar no Railway. Faça **Redeploy** após alterar variáveis.
+
+---
+
 Depois de salvar todas, vá em **Deployments** → **Redeploy** no último deploy para as variáveis valerem.
