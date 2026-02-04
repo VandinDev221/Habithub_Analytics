@@ -22,16 +22,14 @@ O Habithub Analytics permite que usuários:
 
 ```
 Habithub_Analytics/
-├── app/               → Next.js 15 (App Router), React, Tailwind, NextAuth (na raiz)
-├── components/       → Componentes React
-├── lib/              → API, hooks
-├── backend/          → Express, TypeScript, PostgreSQL
+├── frontend/          → Next.js 15 (App Router), React, Tailwind, NextAuth
+├── backend/           → Express, TypeScript, PostgreSQL
 ├── docker-compose.yml
 ├── .env / .env.example
 └── SISTEMA.md (este arquivo)
 ```
 
-- **Frontend** (raiz) roda em `http://localhost:3000` (dev). Páginas públicas (landing, login, registro) e área autenticada (dashboard, hábitos, analytics, configurações).
+- **Frontend** roda em `http://localhost:3000` (dev). Páginas públicas (landing, login, registro) e área autenticada (dashboard, hábitos, analytics, configurações).
 - **Backend** roda em `http://localhost:4000` (dev). API REST com autenticação JWT; documentação Swagger em `/api-docs`.
 - **Banco** PostgreSQL (usuários, hábitos, logs). Migração via `npm run db:migrate` na pasta `backend`.
 

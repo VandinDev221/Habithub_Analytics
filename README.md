@@ -21,9 +21,7 @@ Sistema web que permite rastrear hábitos, visualizar analytics preditivos e rec
 
 ```
 habithub-analytics/
-├── app/               # Next.js 15 (App Router) — na raiz para Vercel
-├── components/        # Componentes React
-├── lib/               # API, hooks
+├── frontend/          # Next.js 15 (App Router)
 ├── backend/           # Express + TypeScript (API)
 ├── docker-compose.yml
 └── README.md
@@ -61,16 +59,17 @@ npm run db:migrate   # cria tabelas no PostgreSQL
 npm run dev
 ```
 
-### 4. Frontend (raiz do repositório)
+### 4. Frontend
 
-Crie `.env.local` na raiz com as variáveis de NextAuth (copie de `.env.example`).
+Crie `frontend/.env.local` com as variáveis de NextAuth (copie de `.env.example` na raiz).
 
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-**Nota:** Para login com Google/GitHub, configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` e `NEXTAUTH_SECRET` no `.env.local`. O backend precisa de `DATABASE_URL` (PostgreSQL) e `JWT_SECRET`.
+**Nota:** Para login com Google/GitHub, configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` e `NEXTAUTH_SECRET` no `.env.local` do frontend. O backend precisa de `DATABASE_URL` (PostgreSQL) e `JWT_SECRET`.
 
 - Frontend: http://localhost:3000  
 - Backend API: http://localhost:4000  
@@ -106,7 +105,7 @@ Documentação completa: **Swagger/OpenAPI** em `/api-docs`.
 
 ### Deploy na Vercel
 
-O Next.js está na **raiz** do repositório (`app/`, `package.json`, etc.), então a Vercel detecta e faz o build sem precisar configurar Root Directory.
+O Next.js está na pasta **`frontend/`**. Na Vercel: **Settings** → **Build and Deployment** → **Root Directory** → **Edit** → **`frontend`** → **Save** → **Redeploy**. Ver **VERCEL_DEPLOY.md**.
 
 ## Licença
 

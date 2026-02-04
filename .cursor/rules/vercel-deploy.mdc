@@ -7,14 +7,14 @@ alwaysApply: true
 
 ## Estrutura do repositório
 
-- **Frontend (Next.js):** na **raiz** do repo — `app/`, `components/`, `lib/`, `public/`, `package.json`, `next.config.js`, etc. Assim a Vercel detecta e faz o build sem configurar Root Directory.
+- **Frontend (Next.js):** pasta **`frontend/`** — `app/`, `components/`, `lib/`, `public/`, `package.json`, `next.config.js`, etc.
 - **Backend (Express):** pasta `backend/`. API REST, PostgreSQL, rotas em `backend/src/`.
 - Na raiz: `README.md`, `SISTEMA.md`, `.env.example`, `docker-compose.yml`.
 
 ## Deploy na Vercel
 
-Next.js está na raiz; não é necessário Root Directory. Conectar o repo e fazer push já gera o deploy. Ver `VERCEL_DEPLOY.md`.
+Configurar **Root Directory** = **`frontend`** em Settings → Build and Deployment. Ver `VERCEL_DEPLOY.md`.
 
 ## Favicon
 
-`public/icon.svg` e `app/icon.svg`. Redirecionamentos em `next.config.js` para `/favicon.ico` e `/favicon.png` → `/icon.svg`.
+`frontend/public/icon.svg` e `frontend/app/icon.svg`. Redirecionamentos em `frontend/next.config.js` para `/favicon.ico` e `/favicon.png` → `/icon.svg`.

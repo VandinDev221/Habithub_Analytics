@@ -1,7 +1,12 @@
 # Deploy na Vercel
 
-O app Next.js está na **raiz** do repositório (`app/`, `components/`, `package.json`, `next.config.js`, etc.). A Vercel detecta o Next.js e faz o build automaticamente — **não é necessário configurar Root Directory**.
+O app Next.js está na pasta **`frontend/`**. A Vercel precisa usar essa pasta como raiz do build.
 
-Após conectar o repositório à Vercel, cada push na branch configurada gera um deploy. O site deve responder em **https://habithub-analytics.vercel.app/** (ou no domínio do seu projeto).
+## Configurar Root Directory
 
-Se ainda aparecer 404, confira no painel da Vercel se o último deploy terminou com sucesso (status **Ready**) e se a branch é a correta.
+1. **[vercel.com](https://vercel.com)** → projeto **Habithub_Analytics** → **Settings**.
+2. Seção **Build and Deployment** (ou **General**).
+3. **Root Directory** → **Edit** → digite **`frontend`** → **Save**.
+4. **Deployments** → menu (⋯) do último deploy → **Redeploy**.
+
+Sem isso, o build usa a raiz do repositório e o site retorna **404**.
