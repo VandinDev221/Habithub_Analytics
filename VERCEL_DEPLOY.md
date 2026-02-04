@@ -1,20 +1,20 @@
 # Deploy na Vercel — Leia antes de fazer deploy
 
-Se o site **habithub-analytics.vercel.app** (ou o seu domínio) mostrar **404** ao abrir a página inicial, é porque a Vercel está buildando a **raiz** do repositório, onde **não está** o app Next.js.
+O app Next.js está na pasta **`frontend/`**, não na raiz do repositório.
 
-O app Next.js está na pasta **`frontend/`**.
+Na raiz do projeto existe um **`vercel.json`** com `"rootDirectory": "frontend"`. Assim a Vercel usa essa pasta automaticamente ao fazer o deploy. **Faça commit e push desse arquivo** para o repositório conectado à Vercel e faça um novo deploy (ou aguarde o deploy automático).
+
+Se mesmo assim o site mostrar **404**, confira no painel:
 
 ---
 
-## Correção obrigatória (uma vez por projeto)
+## Correção manual no painel (se precisar)
 
 1. Acesse **[vercel.com](https://vercel.com)** e abra o projeto **Habithub_Analytics**.
 2. Vá em **Settings** (Configurações).
-3. Em **General**, encontre **Root Directory**.
-4. Clique em **Edit**.
-5. Digite ou selecione: **`frontend`** (só a pasta, sem barra no final).
-6. Clique em **Save**.
-7. Vá na aba **Deployments**, abra o menu (⋯) do último deploy e clique em **Redeploy**.
+3. Procure a seção **Build and Deployment** (ou **General**).
+4. Encontre **Root Directory** → **Edit** → digite **`frontend`** → **Save**.
+5. Aba **Deployments** → menu (⋯) do último deploy → **Redeploy**.
 
 Depois do redeploy, a página inicial deve carregar normalmente.
 
