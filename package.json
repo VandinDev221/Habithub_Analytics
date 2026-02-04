@@ -1,8 +1,0 @@
-{
-  "name": "habithub-analytics-root",
-  "private": true,
-  "scripts": {
-    "install:vercel": "cd frontend && npm ci",
-    "build": "cd frontend && npm run build"
-  }
-}
