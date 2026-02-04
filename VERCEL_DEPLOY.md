@@ -1,10 +1,15 @@
 # Deploy na Vercel
 
-## 1. Root Directory (obrigatório — evita 404 em páginas e em /api/backend-auth/*)
+## 1. Root Directory (obrigatório — evita 404 em páginas e em /api/*)
 
 O app Next.js está na pasta **`frontend/`**. Se a Vercel buildar a partir da **raiz** do repositório, você verá **404** em rotas como `/api/backend-auth/register` e nas páginas do app.
 
 **Como configurar:** no projeto na Vercel → **Settings** → **Build and Deployment** (ou **General**) → **Root Directory** → **Edit** → digite **`frontend`** (só a palavra, sem barra) → **Save**. Depois faça **Redeploy**.
+
+**Como conferir:** depois do deploy, abra no navegador:  
+`https://habithub-analytics.vercel.app/api/health`  
+- Se retornar **`{"ok":true,"source":"frontend-api"}`** → o Root Directory está certo e as rotas `/api/*` estão ativas.  
+- Se retornar **404** → o Root Directory ainda não está como **`frontend`**; ajuste e faça **Redeploy** de novo.
 
 ---
 
