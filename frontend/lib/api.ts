@@ -1,16 +1,29 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
+/** Rotas de auth que devem ir pelo proxy no mesmo domínio (evita CORS). */
+const AUTH_PROXY_PATHS: Record<string, string> = {
+  '/api/auth/register': '/api/backend-auth/register',
+  '/api/auth/login': '/api/backend-auth/login',
+};
+
 /**
  * useProxy: true = chama via /api/proxy/... (Next.js injeta o token do backend).
  * Use para todas as rotas autenticadas para evitar 401 por token no client.
+ * Register e login usam automaticamente o proxy no mesmo domínio para evitar CORS.
  */
 export async function api<T>(
   path: string,
   options: RequestInit & { token?: string; useProxy?: boolean } = {}
 ): Promise<T> {
   const { token, useProxy, ...init } = options;
-  const baseUrl = useProxy ? '' : API_URL;
-  const url = useProxy ? `/api/proxy/${path.replace(/^\/api\//, '')}` : `${baseUrl}${path}`;
+  const proxyPath = AUTH_PROXY_PATHS[path];
+  const useAuthProxy = typeof proxyPath === 'string';
+  const baseUrl = useProxy || useAuthProxy ? '' : API_URL;
+  const url = useProxy
+    ? `/api/proxy/${path.replace(/^\/api\//, '')}`
+    : useAuthProxy
+      ? proxyPath
+      : `${baseUrl}${path}`;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
