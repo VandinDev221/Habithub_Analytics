@@ -13,12 +13,11 @@ alwaysApply: true
 
 ## Deploy na Vercel (obrigatório para evitar 404)
 
-O app Next.js **não** está na raiz do repo. Para o site não retornar 404:
+O app Next.js **não** está na raiz do repo. Root Directory **não** pode ser definido em `vercel.json` (schema não aceita); só no painel.
 
-1. No painel da Vercel: **Settings** → **General** → **Root Directory** → **Edit** → valor: **`frontend`** → **Save**.
-2. **Deployments** → **Redeploy**.
+No painel da Vercel: **Settings** → **Build and Deployment** → **Root Directory** → **Edit** → **`frontend`** → **Save** → **Deployments** → **Redeploy**.
 
-Se não configurar Root Directory = `frontend`, GET `/` e demais rotas retornam 404. Documentação completa em `VERCEL_DEPLOY.md`.
+Documentação: `VERCEL_DEPLOY.md`.
 
 ## Favicon
 
