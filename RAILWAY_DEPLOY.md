@@ -16,10 +16,14 @@ Assim o Railway passa a usar só a pasta **backend/** (onde está o `package.jso
 
 No **Variables** do service, configure pelo menos:
 
-- **DATABASE_URL** (ou **PG_HOST**, **PG_USER**, **PG_PASSWORD**, **PG_DATABASE**) — PostgreSQL
+- **DATABASE_URL** — connection string do PostgreSQL (obrigatório; sem isso o cadastro/login retorna 500/503)
 - **JWT_SECRET**
 - **FRONTEND_URL** = `https://habithub-analytics.vercel.app` (para CORS)
 - **OPENAI_API_KEY** (se for usar “Pergunte sobre seus hábitos”)
-- **PORT** — o Railway costuma injetar; se precisar, use a variável que eles indicam (ex.: `PORT`)
+- **PORT** — o Railway costuma injetar automaticamente
+
+### Rodar as migrações (obrigatório após o primeiro deploy)
+
+Se o cadastro retornar **500** ou **503** com mensagem de banco, as tabelas ainda não existem. No Railway, em **Settings** do service → **Custom Start Command**, use: `npm run db:migrate && npm run start` (assim as migrações rodam a cada deploy). Alternativa: use o Railway CLI e rode uma vez: `railway run npm run db:migrate` na pasta do backend.
 
 Depois do deploy, use a URL gerada pelo Railway (ex.: `https://habithubanalytics-production.up.railway.app`) como **NEXT_PUBLIC_API_URL** nas variáveis do frontend na Vercel. Sem barra no final.

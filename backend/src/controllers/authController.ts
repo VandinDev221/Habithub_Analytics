@@ -37,6 +37,11 @@ export async function register(req: Request, res: Response, next: NextFunction):
     );
     res.status(201).json({ user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar }, token });
   } catch (e) {
+    const err = e as { code?: string; message?: string };
+    if (err.code === '42P01' || (typeof err.message === 'string' && (err.message.includes('relation "users"') || err.message.includes('connect') || err.message.includes('ECONNREFUSED')))) {
+      next(new AppError(503, 'Banco de dados não configurado. No Railway: confira DATABASE_URL e rode as migrações (npm run db:migrate).'));
+      return;
+    }
     next(e);
   }
 }
@@ -81,6 +86,11 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
       token,
     });
   } catch (e) {
+    const err = e as { code?: string; message?: string };
+    if (err.code === '42P01' || (typeof err.message === 'string' && (err.message.includes('relation "users"') || err.message.includes('connect') || err.message.includes('ECONNREFUSED')))) {
+      next(new AppError(503, 'Banco de dados não configurado. No Railway: confira DATABASE_URL e rode as migrações (npm run db:migrate).'));
+      return;
+    }
     next(e);
   }
 }
@@ -118,6 +128,11 @@ export async function oauthUser(req: Request, res: Response, next: NextFunction)
     );
     res.json({ user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar }, token });
   } catch (e) {
+    const err = e as { code?: string; message?: string };
+    if (err.code === '42P01' || (typeof err.message === 'string' && (err.message.includes('relation "users"') || err.message.includes('connect') || err.message.includes('ECONNREFUSED')))) {
+      next(new AppError(503, 'Banco de dados não configurado. No Railway: confira DATABASE_URL e rode as migrações (npm run db:migrate).'));
+      return;
+    }
     next(e);
   }
 }
@@ -135,6 +150,11 @@ export async function getMe(req: Request, res: Response, next: NextFunction): Pr
     }
     res.json(rows[0]);
   } catch (e) {
+    const err = e as { code?: string; message?: string };
+    if (err.code === '42P01' || (typeof err.message === 'string' && (err.message.includes('relation "users"') || err.message.includes('connect') || err.message.includes('ECONNREFUSED')))) {
+      next(new AppError(503, 'Banco de dados não configurado. No Railway: confira DATABASE_URL e rode as migrações (npm run db:migrate).'));
+      return;
+    }
     next(e);
   }
 }
