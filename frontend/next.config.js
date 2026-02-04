@@ -9,7 +9,10 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'date-fns'],
   },
   async redirects() {
-    return [{ source: '/favicon.ico', destination: '/icon.svg', permanent: false }];
+    return [
+      { source: '/favicon.ico', destination: '/icon.svg', permanent: false },
+      { source: '/favicon.png', destination: '/icon.svg', permanent: false },
+    ];
   },
 };
 

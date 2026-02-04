@@ -1,0 +1,25 @@
+---
+description: Estrutura do projeto e deploy na Vercel (evitar 404)
+alwaysApply: true
+---
+
+# Habithub Analytics — Deploy e estrutura
+
+## Estrutura do repositório
+
+- **Frontend (Next.js):** pasta `frontend/`. Todo o app web (App Router, páginas, API routes do Next.js) está aqui.
+- **Backend (Express):** pasta `backend/`. API REST, PostgreSQL, rotas em `backend/src/`.
+- Na raiz: `README.md`, `SISTEMA.md`, `VERCEL_DEPLOY.md`, `.env.example`, `docker-compose.yml`.
+
+## Deploy na Vercel (obrigatório para evitar 404)
+
+O app Next.js **não** está na raiz do repo. Para o site não retornar 404:
+
+1. No painel da Vercel: **Settings** → **General** → **Root Directory** → **Edit** → valor: **`frontend`** → **Save**.
+2. **Deployments** → **Redeploy**.
+
+Se não configurar Root Directory = `frontend`, GET `/` e demais rotas retornam 404. Documentação completa em `VERCEL_DEPLOY.md`.
+
+## Favicon
+
+O projeto usa `frontend/public/icon.svg` e `frontend/app/icon.svg`. Redirecionamentos em `frontend/next.config.js` para `/favicon.ico` e `/favicon.png` apontam para `/icon.svg`.

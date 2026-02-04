@@ -100,19 +100,17 @@ Documentação completa: **Swagger/OpenAPI** em `/api-docs`.
 
 ## Deploy
 
-- **Frontend**: Vercel (`meu-habithub.vercel.app`)
-- **Backend**: Railway ou Render (`api-habithub.up.railway.app`)
+- **Frontend**: Vercel (ex.: `habithub-analytics.vercel.app`)
+- **Backend**: Railway ou Render
 - **Bancos**: Neon (PostgreSQL), MongoDB Atlas, Redis (Upstash ou similar)
 
-### Corrigir 404 na Vercel
+### ⚠️ 404 na Vercel (página em branco ou NOT_FOUND)
 
-Se aparecer **404 NOT_FOUND** após conectar o repositório, o app Next.js está na pasta `frontend/`, não na raiz. No painel da Vercel:
+O app Next.js fica na pasta **`frontend/`**. Se a **Root Directory** na Vercel não for ajustada, o site retorna **404**.
 
-1. Abra o projeto → **Settings** → **General**.
-2. Em **Root Directory**, clique em **Edit**, escolha a pasta **`frontend`** e salve.
-3. Faça um novo deploy (**Redeploy** na aba Deployments).
+**Solução (obrigatória):** em **[vercel.com](https://vercel.com)** → seu projeto → **Settings** → **General** → **Root Directory** → **Edit** → digite **`frontend`** → **Save** → **Deployments** → **Redeploy**.
 
-Assim a Vercel passa a buildar e servir o Next.js a partir de `frontend/`.
+Guia passo a passo: **[VERCEL_DEPLOY.md](./VERCEL_DEPLOY.md)**.
 
 ## Licença
 
