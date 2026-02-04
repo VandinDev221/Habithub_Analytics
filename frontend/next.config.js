@@ -8,6 +8,9 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'date-fns'],
   },
+  async redirects() {
+    return [{ source: '/favicon.ico', destination: '/icon.svg', permanent: false }];
+  },
 };
 
 module.exports = nextConfig;

@@ -5,6 +5,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Habithub Analytics',
   description: 'Sistema de Análise de Hábitos com IA',
+  icons: { icon: '/icon.svg' },
 };
 
 export default function RootLayout({
