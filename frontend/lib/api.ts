@@ -1,6 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+const isProductionApi = API_URL.startsWith('https://');
 
-/** Rotas de auth que devem ir pelo proxy no mesmo domínio (evita CORS). */
+/** Em produção, cadastro/login vão direto ao backend (evita 404 na rota /api/register da Vercel). Em dev, usam proxy no mesmo domínio. */
 const AUTH_PROXY_PATHS: Record<string, string> = {
   '/api/auth/register': '/api/register',
   '/api/auth/login': '/api/login',
@@ -8,8 +9,7 @@ const AUTH_PROXY_PATHS: Record<string, string> = {
 
 /**
  * useProxy: true = chama via /api/proxy/... (Next.js injeta o token do backend).
- * Use para todas as rotas autenticadas para evitar 401 por token no client.
- * Register e login usam automaticamente o proxy no mesmo domínio para evitar CORS.
+ * Register e login: em produção chamam o backend direto (NEXT_PUBLIC_API_URL); em dev usam /api/register e /api/login.
  */
 export async function api<T>(
   path: string,
@@ -17,13 +17,16 @@ export async function api<T>(
 ): Promise<T> {
   const { token, useProxy, ...init } = options;
   const proxyPath = AUTH_PROXY_PATHS[path];
-  const useAuthProxy = typeof proxyPath === 'string';
-  const baseUrl = useProxy || useAuthProxy ? '' : API_URL;
+  const isAuthPath = typeof proxyPath === 'string';
+  const useDirectBackend = isProductionApi && isAuthPath;
+  const baseUrl = useProxy ? '' : useDirectBackend ? API_URL : isAuthPath ? '' : API_URL;
   const url = useProxy
     ? `/api/proxy/${path.replace(/^\/api\//, '')}`
-    : useAuthProxy
-      ? proxyPath
-      : `${baseUrl}${path}`;
+    : useDirectBackend
+      ? `${API_URL}${path}`
+      : isAuthPath
+        ? proxyPath
+        : `${baseUrl}${path}`;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -39,7 +42,7 @@ export async function api<T>(
     const msg = err.error ?? res.statusText;
     const hint =
       res.status === 404
-        ? ' Rota de cadastro não encontrada — confira o deploy do frontend (rotas /api/register e /api/login) e NEXT_PUBLIC_API_URL na Vercel.'
+        ? ' Na Vercel: Settings → Root Directory = frontend → Save → Redeploy. Depois teste: ' + (typeof window !== 'undefined' ? window.location.origin : '') + '/api/register (deve retornar JSON, não 404).'
         : res.status === 502 || res.status === 503
           ? ' Backend ou banco pode estar indisponível — confira Railway (DATABASE_URL e migrações) e NEXT_PUBLIC_API_URL.'
           : '';
