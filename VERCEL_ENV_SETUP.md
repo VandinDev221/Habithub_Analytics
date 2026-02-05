@@ -24,7 +24,7 @@
 ### NEXT_PUBLIC_API_URL
 - **Key:** `NEXT_PUBLIC_API_URL`
 - **Value:** URL do backend (Railway), **com** `https://` e **sem** barra no final. Exemplo:
-  - **Railway (este projeto):** `https://habithubanalytics-production.up.railway.app`
+  - **Railway (este projeto):** `https://habithubanalytics-production-e95b.up.railway.app`
   - Outro: a URL base da API (ex.: `https://sua-api.onrender.com`)
 
 ---

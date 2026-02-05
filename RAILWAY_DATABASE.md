@@ -93,6 +93,43 @@ Se o deploy **falhar** na etapa `db:migrate`, veja os **logs** do Railway. Se ap
 
 ---
 
+## 4. Testar conexão e migrações
+
+### Pelo backend já no Railway
+
+Abra no navegador a URL do seu backend + **`/api/db-check`**:
+
+- Ex.: `https://habithubanalytics-production-e95b.up.railway.app/api/db-check`
+
+A resposta é um JSON com:
+
+- **databaseUrlSet** — se `DATABASE_URL` está definida no backend
+- **connectionOk** — se a conexão com o Postgres funcionou
+- **tablesOk** — se a tabela `users` existe (migrações rodaram)
+- **hint** — mensagem de o que fazer se algo falhar
+
+Se `connectionOk` e `tablesOk` forem `true`, está tudo certo.
+
+### Pelo seu PC (script no backend)
+
+Na pasta **backend**, com a **URL pública** do Postgres (em Connect → Public Network no Railway) no `.env` como `DATABASE_URL`:
+
+```bash
+npm run db:check    # testa conexão e se as tabelas existem
+npm run db:migrate  # cria as tabelas (se ainda não existirem)
+```
+
+**Atenção:** use a connection string **pública** (host tipo `xxx.proxy.rlwy.net`), não `postgres.railway.internal`, senão a conexão do seu PC falha.
+
+Com **Railway CLI** instalado e o projeto linkado, você pode rodar no ambiente do Railway (aí vale a URL interna):
+
+```bash
+railway run npm run db:check
+railway run npm run db:migrate
+```
+
+---
+
 ## Resumo
 
 | O que fazer | Onde |
