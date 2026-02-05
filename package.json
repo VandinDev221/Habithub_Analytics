@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "cd backend && npm ci && npm run build",
-    "start": "cd backend && npm run start"
+    "start": "cd backend && npm run start",
+    "db:migrate": "cd backend && npm run db:migrate"
   },
   "engines": {
     "node": ">=18"
