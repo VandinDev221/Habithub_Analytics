@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 
 // Carrega .env da raiz do projeto (onde está o .env) e depois do backend
 config({ path: resolve(process.cwd(), '..', '.env') });
@@ -11,6 +11,7 @@ import compression from 'compression';
 import { swaggerUi, swaggerSpec } from './config/swagger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import routes from './routes/index.js';
+import { readFileSync, existsSync } from 'fs';
 import { pgPool } from './config/db.js';
 
 const app = express();
@@ -92,6 +93,33 @@ app.get('/api/db-check', async (_req, res) => {
           : null,
     error: error ?? undefined,
   });
+});
+
+/** Roda migrações uma vez (protegido por RUN_MIGRATE_SECRET). POST /api/db-migrate com header Authorization: Bearer <RUN_MIGRATE_SECRET> */
+app.post('/api/db-migrate', async (req, res) => {
+  const secret = process.env.RUN_MIGRATE_SECRET;
+  if (!secret || secret.length < 16) {
+    return res.status(501).json({
+      error: 'RUN_MIGRATE_SECRET não definida (mín. 16 caracteres). Defina nas Variables do Railway e chame com Authorization: Bearer <valor>.',
+    });
+  }
+  const token = req.headers.authorization?.replace(/^Bearer\s+/i, '') ?? req.body?.secret ?? '';
+  if (token !== secret) {
+    return res.status(403).json({ error: 'Secret inválido.' });
+  }
+  try {
+    const cwd = process.cwd();
+    const schemaPath = existsSync(join(cwd, 'dist', 'db', 'schema.sql'))
+      ? join(cwd, 'dist', 'db', 'schema.sql')
+      : join(cwd, 'src', 'db', 'schema.sql');
+    const sql = readFileSync(schemaPath, 'utf-8');
+    await pgPool.query(sql);
+    return res.json({ ok: true, message: 'Migrações aplicadas.' });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('[db-migrate]', e);
+    return res.status(500).json({ error: 'Falha ao rodar migrações.', detail: msg });
+  }
 });
 
 app.use('/api', routes);

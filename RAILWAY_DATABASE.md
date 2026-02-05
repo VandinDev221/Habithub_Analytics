@@ -128,6 +128,32 @@ railway run npm run db:check
 railway run npm run db:migrate
 ```
 
+### Rodar migrações uma vez por endpoint (quando o start command não rodou)
+
+Se o backend já está no ar mas **tablesOk** continua **false**, você pode criar as tabelas chamando o endpoint protegido:
+
+1. No Railway, no **serviço do backend** → **Variables**, crie uma variável:
+   - Nome: **`RUN_MIGRATE_SECRET`**
+   - Valor: uma string longa e aleatória (ex.: `minhaChaveSecretaMigrate2025` — use algo difícil de adivinhar, mín. 16 caracteres).
+2. Salve e faça **Redeploy** (para a variável valer).
+3. Depois do deploy, chame **uma vez** (no navegador não dá; use PowerShell, CMD ou Postman):
+
+   **PowerShell:**
+   ```powershell
+   $secret = "SUA_RUN_MIGRATE_SECRET_AQUI"
+   Invoke-RestMethod -Uri "https://habithubanalytics-production-e95b.up.railway.app/api/db-migrate" -Method POST -Headers @{ Authorization = "Bearer $secret" }
+   ```
+
+   **curl (Git Bash / WSL):**
+   ```bash
+   curl -X POST "https://habithubanalytics-production-e95b.up.railway.app/api/db-migrate" -H "Authorization: Bearer SUA_RUN_MIGRATE_SECRET_AQUI"
+   ```
+
+4. Resposta esperada: `{"ok":true,"message":"Migrações aplicadas."}`.
+5. Teste de novo: `https://habithubanalytics-production-e95b.up.railway.app/api/db-check` → **tablesOk** deve vir **true**.
+
+Depois disso você pode remover **RUN_MIGRATE_SECRET** das Variables (opcional) ou deixar para uso futuro.
+
 ---
 
 ## Resumo

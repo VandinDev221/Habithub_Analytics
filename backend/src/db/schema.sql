@@ -35,6 +35,6 @@ CREATE TABLE IF NOT EXISTS habit_logs (
   UNIQUE(habit_id, date)
 );
 
-CREATE INDEX idx_habits_user_id ON habits(user_id);
-CREATE INDEX idx_habit_logs_habit_id ON habit_logs(habit_id);
-CREATE INDEX idx_habit_logs_date ON habit_logs(date);
+CREATE INDEX IF NOT EXISTS idx_habits_user_id ON habits(user_id);
+CREATE INDEX IF NOT EXISTS idx_habit_logs_habit_id ON habit_logs(habit_id);
+CREATE INDEX IF NOT EXISTS idx_habit_logs_date ON habit_logs(date);
