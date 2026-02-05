@@ -32,7 +32,9 @@ export default function LoginPage() {
       <div className="w-full max-w-sm rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 p-6">
         <h1 className="text-2xl font-bold text-center mb-6">Entrar</h1>
         {error && (
-          <p className="text-red-500 text-sm text-center mb-4">{error}</p>
+          <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800" role="alert">
+            <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+          </div>
         )}
         <form onSubmit={handleCredentials} className="space-y-4">
           <div>

@@ -36,7 +36,14 @@ export async function api<T>(
   const res = await fetch(url, { ...init, headers, credentials: 'include' });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error ?? res.statusText);
+    const msg = err.error ?? res.statusText;
+    const hint =
+      res.status === 404
+        ? ' Rota de cadastro não encontrada — confira o deploy do frontend (rotas /api/register e /api/login) e NEXT_PUBLIC_API_URL na Vercel.'
+        : res.status === 502 || res.status === 503
+          ? ' Backend ou banco pode estar indisponível — confira Railway (DATABASE_URL e migrações) e NEXT_PUBLIC_API_URL.'
+          : '';
+    throw new Error(msg + hint);
   }
   if (res.status === 204) return undefined as T;
   return res.json();
