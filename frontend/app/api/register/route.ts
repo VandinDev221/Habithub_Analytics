@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
+/** GET /api/register — só para testar se a rota está no ar (Root Directory = frontend na Vercel). */
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    route: 'register',
+    backend: BACKEND_URL ? 'configurado' : 'não definido',
+  });
+}
+
 /** Proxy para registro. POST /api/register (evita 404 quando rewrite não se aplica na Vercel). */
 export async function POST(req: NextRequest) {
   try {

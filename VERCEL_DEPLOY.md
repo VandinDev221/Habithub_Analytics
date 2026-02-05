@@ -38,3 +38,8 @@ Depois de salvar as variáveis, faça um **Redeploy** para elas valerem.
 
 - **500 em `/api/auth/session`** → falta **NEXTAUTH_SECRET** ou **NEXTAUTH_URL** errado (tem que ser a URL do site na Vercel).
 - **ERR_CONNECTION_REFUSED em localhost:4000** → em produção **NEXT_PUBLIC_API_URL** tem que apontar para o backend deployado (Railway, Render, etc.), não para `localhost:4000`. Se o backend ainda não estiver em produção, cadastro e login por email vão falhar até você subir a API e colocar a URL aqui.
+- **"Rota de cadastro não encontrada"** (404 em `/api/register`) → a Vercel está buildando pela **raiz** do repo em vez da pasta **frontend**.  
+  **O que fazer:**  
+  1. Vercel → projeto → **Settings** → **General** (ou **Build and Deployment**) → **Root Directory** → **Edit** → digite **`frontend`** → **Save**.  
+  2. **Redeploy** (Deployments → ⋮ no último deploy → Redeploy, ou novo commit).  
+  3. Teste: abra `https://habithub-analytics.vercel.app/api/register` no navegador. Deve retornar um JSON tipo `{"ok":true,"route":"register",...}`. Se ainda for 404, o Root Directory não está aplicado — confira de novo e faça Redeploy.
