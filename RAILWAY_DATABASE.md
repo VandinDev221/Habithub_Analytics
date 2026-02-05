@@ -2,6 +2,12 @@
 
 Se você vê a mensagem **"Banco de dados não configurado. No Railway: confira DATABASE_URL e rode as migrações (npm run db:migrate)."**, o backend está no ar mas **não consegue usar o banco**. Siga os passos abaixo.
 
+## Checklist rápido
+
+- [ ] **DATABASE_URL** está definida no **serviço do backend** (não só no Postgres): Variables → `DATABASE_URL` = referência `${{ Postgres.DATABASE_URL }}` ou connection string copiada.
+- [ ] **Migrações** rodaram: o start command do backend já inclui `npm run db:migrate` (ex.: `npm run build && npm run db:migrate && npm run start`). Se não, rode uma vez: na pasta `backend`, com Railway CLI: `railway run npm run db:migrate`, ou altere o Custom Start Command para incluir `db:migrate` e faça redeploy.
+- [ ] **Redeploy** do backend após alterar variáveis, para as mudanças valerem.
+
 ---
 
 ## 1. Criar o PostgreSQL no Railway
@@ -24,6 +30,8 @@ O backend precisa “enxergar” a variável **DATABASE_URL** que o Postgres já
 3. Abra a aba **Variables** (no topo ou no menu lateral daquele serviço).
 
 ### Como adicionar a variável
+
+No serviço **Postgres**, a tela **"Connect"** / **"Connect to Postgres"** do Railway indica: crie no serviço que vai conectar ao banco uma variável com valor **`${{ Postgres.DATABASE_URL }}`**. Use isso no backend (passos abaixo).
 
 Você vai **criar uma variável nova** no backend com nome `DATABASE_URL` e valor apontando para o Postgres. Há duas formas:
 
