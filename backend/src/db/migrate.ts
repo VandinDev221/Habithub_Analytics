@@ -5,7 +5,7 @@ import { pgPool } from '../config/db.js';
 
 async function migrate(): Promise<void> {
   const cwd = process.cwd();
-  // No deploy (Railway): build copia schema para dist/db; rodamos "node dist/db/migrate.js" com cwd = backend
+  // No deploy (Render): build copia schema para dist/db; rodamos migrate com cwd = backend
   const schemaPath =
     existsSync(join(cwd, 'dist', 'db', 'schema.sql'))
       ? join(cwd, 'dist', 'db', 'schema.sql')

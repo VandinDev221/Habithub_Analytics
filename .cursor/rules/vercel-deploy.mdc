@@ -15,6 +15,10 @@ alwaysApply: true
 
 Configurar **Root Directory** = **`frontend`** em Settings → Build and Deployment. Ver `VERCEL_DEPLOY.md`.
 
+## Deploy do backend
+
+Backend Express na pasta **`backend/`** → **Render**. Ver `RENDER_DEPLOY.md`. Na Vercel, `NEXT_PUBLIC_API_URL` = URL do Web Service Render.
+
 ## Favicon
 
 `frontend/public/icon.svg` e `frontend/app/icon.svg`. Redirecionamentos em `frontend/next.config.js` para `/favicon.ico` e `/favicon.png` → `/icon.svg`.

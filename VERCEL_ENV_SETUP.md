@@ -23,21 +23,45 @@
 
 ### NEXT_PUBLIC_API_URL
 - **Key:** `NEXT_PUBLIC_API_URL`
-- **Value:** URL do backend (Railway), **com** `https://` e **sem** barra no final. Exemplo:
-  - **Railway (este projeto):** `https://habithubanalytics-production-e95b.up.railway.app`
-  - Outro: a URL base da API (ex.: `https://sua-api.onrender.com`)
+- **Value:** URL do backend no **Render**, **com** `https://` e **sem** barra no final. Exemplo:
+  - `https://habithub-api.onrender.com`
+  - (copie a URL do Web Service em Render → Settings)
 
 ---
 
-## Opcionais (login com Google)
+## Login com Google e GitHub (obrigatório para OAuth)
 
-- **Key:** `GOOGLE_CLIENT_ID` → **Value:** (do Google Cloud Console)
-- **Key:** `GOOGLE_CLIENT_SECRET` → **Value:** (do Google Cloud Console)
+As variáveis abaixo precisam estar na **Vercel** (Settings → Environment Variables → Production). Depois de salvar, faça **Redeploy**.
 
-## Opcionais (login com GitHub)
+| Key | Onde obter |
+|-----|------------|
+| **GOOGLE_CLIENT_ID** | [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → OAuth 2.0 Client |
+| **GOOGLE_CLIENT_SECRET** | mesmo client OAuth do Google |
+| **GITHUB_CLIENT_ID** | GitHub → Settings → Developer settings → OAuth Apps |
+| **GITHUB_CLIENT_SECRET** | mesmo OAuth App do GitHub |
 
-- **Key:** `GITHUB_CLIENT_ID` → **Value:** (do GitHub OAuth App)
-- **Key:** `GITHUB_CLIENT_SECRET` → **Value:** (do GitHub OAuth App)
+### URLs de callback (copie exatamente — só produção)
+
+No **Google Cloud Console** → OAuth client → Authorized redirect URIs:
+
+```
+https://habithub-analytics.vercel.app/api/auth/callback/google
+```
+
+No **GitHub OAuth App** → Authorization callback URL:
+
+```
+https://habithub-analytics.vercel.app/api/auth/callback/github
+```
+
+Se o domínio na Vercel for outro, troque `habithub-analytics.vercel.app` pelo seu domínio em **NEXTAUTH_URL** e nas URLs acima.
+
+### Erro `OAuthSignin` ao clicar Google/GitHub
+
+- **GOOGLE_CLIENT_ID** ou **GITHUB_CLIENT_ID** vazio/incorreto na Vercel
+- **Secret** errado ou com espaço extra ao colar
+- Redirect URI no Google/GitHub **diferente** da URL acima
+- Variável salva mas **Redeploy** não feito
 
 ---
 
@@ -47,8 +71,8 @@ Depois do deploy, abra no navegador:
 
 **`https://habithub-analytics.vercel.app/api/backend-ping`**
 
-- Se retornar **`{"ok":true,"backend":true,...}`** → a Vercel está conseguindo chamar o backend (Railway). Cadastro e login devem funcionar.
-- Se retornar **`{"ok":false,"error":"Backend inacessível..."}`** → confira **NEXT_PUBLIC_API_URL** (URL do backend sem barra no final) e se a API está no ar no Railway. Faça **Redeploy** após alterar variáveis.
+- Se retornar **`{"ok":true,"backend":true,...}`** → a Vercel está conseguindo chamar o backend (Render). Cadastro e login devem funcionar.
+- Se retornar **`{"ok":false,"error":"Backend inacessível..."}`** → confira **NEXT_PUBLIC_API_URL** (URL do Render sem barra no final) e se a API está **Live**. No plano free, a primeira requisição após idle pode demorar ~1 min (cold start). Faça **Redeploy** na Vercel após alterar variáveis.
 
 ---
 

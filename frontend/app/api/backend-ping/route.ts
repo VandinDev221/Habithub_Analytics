@@ -13,7 +13,7 @@ async function pingBackend(base: string): Promise<{ res: Response; url: string }
 }
 
 /**
- * Diagnóstico: testa se o frontend (Vercel) consegue falar com o backend (Railway).
+ * Diagnóstico: testa se o frontend (Vercel) consegue falar com o backend (Render).
  * GET /api/backend-ping → { ok: true, backend: true } ou { ok: false, error: "..." }
  */
 export async function GET() {
@@ -24,7 +24,7 @@ export async function GET() {
         {
           ok: false,
           backend: false,
-          error: `Backend respondeu com status ${res.status} em ${url}. URL base deve ser a raiz do backend (ex.: https://xxx.up.railway.app).`,
+          error: `Backend respondeu com status ${res.status} em ${url}. URL base deve ser a raiz do backend (ex.: https://habithub-api.onrender.com).`,
           backendUrl: BACKEND_URL.replace(/\/$/, ''),
         },
         { status: 502 }

@@ -23,7 +23,7 @@ Em **Settings** → **Environment Variables**, adicione as variáveis abaixo. Us
 |------|--------|------------|
 | **NEXTAUTH_URL** | `https://habithub-analytics.vercel.app` | URL do seu site na Vercel (troque pelo seu domínio se for outro). |
 | **NEXTAUTH_SECRET** | uma string longa e aleatória | Gere com: `openssl rand -base64 32` no terminal. Sem isso, `/api/auth/session` pode retornar **500**. |
-| **NEXT_PUBLIC_API_URL** | URL do seu backend em produção | Ex.: `https://sua-api.railway.app` ou `https://sua-api.onrender.com`. **Não** use `http://localhost:4000` em produção, senão aparece **ERR_CONNECTION_REFUSED** ao registrar/login. |
+| **NEXT_PUBLIC_API_URL** | URL do backend no Render | Ex.: `https://habithub-api.onrender.com`. Ver **RENDER_DEPLOY.md**. **Não** use `localhost:4000` em produção. |
 
 ### Opcionais (login com Google/GitHub)
 
@@ -37,7 +37,7 @@ Depois de salvar as variáveis, faça um **Redeploy** para elas valerem.
 ## Resumo dos erros
 
 - **500 em `/api/auth/session`** → falta **NEXTAUTH_SECRET** ou **NEXTAUTH_URL** errado (tem que ser a URL do site na Vercel).
-- **ERR_CONNECTION_REFUSED em localhost:4000** → em produção **NEXT_PUBLIC_API_URL** tem que apontar para o backend deployado (Railway, Render, etc.), não para `localhost:4000`. Se o backend ainda não estiver em produção, cadastro e login por email vão falhar até você subir a API e colocar a URL aqui.
+- **ERR_CONNECTION_REFUSED em localhost:4000** → em produção **NEXT_PUBLIC_API_URL** tem que apontar para o backend no **Render**, não para `localhost:4000`. Ver **RENDER_DEPLOY.md**.
 - **"Rota de cadastro não encontrada"** (404 em `/api/register`) → a Vercel está buildando pela **raiz** do repo em vez da pasta **frontend**.  
   **O que fazer:**  
   1. Vercel → projeto → **Settings** → **General** (ou **Build and Deployment**) → **Root Directory** → **Edit** → digite **`frontend`** → **Save**.  

@@ -1,7 +1,7 @@
 /**
  * Testa conexão com o PostgreSQL e verifica se as tabelas (migrações) existem.
  * Uso: npm run db:check (com DATABASE_URL no .env ou no ambiente)
- *      railway run npm run db:check (no projeto linkado ao Railway)
+ *      ou com External Database URL do Render no .env
  */
 import 'dotenv/config';
 import { pgPool } from '../config/db.js';
@@ -10,7 +10,7 @@ async function check(): Promise<void> {
   const urlSet = Boolean(process.env.DATABASE_URL?.trim());
   console.log('DATABASE_URL definida:', urlSet ? 'sim' : 'não');
   if (!urlSet) {
-    console.error('Defina DATABASE_URL (ou use "railway run npm run db:check").');
+    console.error('Defina DATABASE_URL (Render → Postgres → External Database URL).');
     process.exit(1);
   }
 
@@ -30,7 +30,7 @@ async function check(): Promise<void> {
     } else {
       console.log('Tabelas encontradas:', tables.length ? tables.join(', ') : 'nenhuma');
       console.error('Faltam:', missing.join(', '));
-      console.error('Rode as migrações: npm run db:migrate (ou railway run npm run db:migrate)');
+      console.error('Rode as migrações: npm run db:migrate (ou start command no Render).');
       process.exit(1);
     }
   } catch (err: unknown) {
@@ -38,7 +38,7 @@ async function check(): Promise<void> {
     const code = err && typeof (err as { code?: string }).code === 'string' ? (err as { code: string }).code : '';
     console.error('Erro na conexão:', msg || code || '(sem mensagem)');
     if (String(err).includes('internal') || (msg + code).includes('ENOTFOUND') || (msg + code).includes('internal')) {
-      console.error('Dica: rodando no seu PC, use a URL pública do Postgres (Connect → Public Network no Railway), não postgres.railway.internal.');
+      console.error('Dica: rodando no seu PC, use a External Database URL do Render, não a Internal URL.');
     }
     process.exit(1);
   } finally {

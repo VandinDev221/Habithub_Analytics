@@ -1,0 +1,32 @@
+# Blueprint Render — backend Habithub Analytics
+# Dashboard Render → New → Blueprint → conecte este repositório
+# Depois copie a URL do Web Service para NEXT_PUBLIC_API_URL na Vercel.
+
+databases:
+  - name: habithub-db
+    plan: free
+    databaseName: habithub
+    user: habithub
+
+services:
+  - type: web
+    name: habithub-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run db:migrate && npm run start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        value: https://habithub-analytics.vercel.app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: habithub-db
+          property: connectionString

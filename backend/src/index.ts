@@ -85,11 +85,11 @@ app.get('/api/db-check', async (_req, res) => {
     connectionOk,
     tablesOk,
     hint: !databaseUrlSet
-      ? 'Defina DATABASE_URL nas Variables do serviço do backend no Railway (referência: ${{ Postgres.DATABASE_URL }})'
+      ? 'Defina DATABASE_URL no Web Service do Render (Environment → Internal Database URL do Postgres).'
       : !connectionOk
-        ? `Conexão falhou: ${error}. Confira se a referência ao Postgres está correta (nome do serviço).`
+        ? `Conexão falhou: ${error}. Confira DATABASE_URL (Internal URL do Postgres no Render).`
         : !tablesOk
-          ? 'Tabelas não existem. Rode as migrações: no start command use "npm run db:migrate && npm run start" ou rode "railway run npm run db:migrate"'
+          ? 'Tabelas não existem. No Render: start command "npm run db:migrate && npm run start" ou POST /api/db-migrate.'
           : null,
     error: error ?? undefined,
   });
@@ -100,7 +100,7 @@ app.post('/api/db-migrate', async (req, res) => {
   const secret = process.env.RUN_MIGRATE_SECRET;
   if (!secret || secret.length < 16) {
     return res.status(501).json({
-      error: 'RUN_MIGRATE_SECRET não definida (mín. 16 caracteres). Defina nas Variables do Railway e chame com Authorization: Bearer <valor>.',
+      error: 'RUN_MIGRATE_SECRET não definida (mín. 16 caracteres). Defina no Environment do Render e chame com Authorization: Bearer <valor>.',
     });
   }
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, '') ?? req.body?.secret ?? '';

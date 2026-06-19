@@ -1,14 +1,38 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
-import { useState } from 'react';
+import { signIn, getProviders } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+
+const OAUTH_ERROR_MESSAGES: Record<string, string> = {
+  OAuthSignin: 'Falha ao iniciar login social. Na Vercel, confira GOOGLE_CLIENT_ID/SECRET e GITHUB_CLIENT_ID/SECRET (Settings → Environment Variables) e faça Redeploy.',
+  OAuthCallback: 'Falha ao concluir login social. Confira as URLs de callback no Google/GitHub.',
+  OAuthAccountNotLinked: 'Este email já está vinculado a outro método de login.',
+  AccessDenied: 'Login cancelado ou negado.',
+  Configuration: 'Erro de configuração do NextAuth (NEXTAUTH_URL / NEXTAUTH_SECRET).',
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [socialProviders, setSocialProviders] = useState<string[]>([]);
+
+  useEffect(() => {
+    const oauthError = new URLSearchParams(window.location.search).get('error');
+    if (oauthError) {
+      setError(OAUTH_ERROR_MESSAGES[oauthError] ?? 'Não foi possível entrar com Google ou GitHub.');
+    }
+    getProviders().then((providers) => {
+      if (!providers) return;
+      setSocialProviders(
+        Object.values(providers)
+          .filter((p) => p.type === 'oauth')
+          .map((p) => p.id)
+      );
+    });
+  }, []);
 
   async function handleCredentials(e: React.FormEvent) {
     e.preventDefault();
@@ -69,28 +93,36 @@ export default function LoginPage() {
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
-        <div className="relative my-6">
-          <span className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-200 dark:border-slate-600" />
-          </span>
-          <span className="relative flex justify-center text-sm text-slate-500">ou continue com</span>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-            className="py-2 px-3 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700"
-          >
-            Google
-          </button>
-          <button
-            type="button"
-            onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
-            className="py-2 px-3 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700"
-          >
-            GitHub
-          </button>
-        </div>
+        {socialProviders.length > 0 && (
+          <>
+            <div className="relative my-6">
+              <span className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-200 dark:border-slate-600" />
+              </span>
+              <span className="relative flex justify-center text-sm text-slate-500">ou continue com</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {socialProviders.includes('google') && (
+                <button
+                  type="button"
+                  onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                  className="py-2 px-3 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700"
+                >
+                  Google
+                </button>
+              )}
+              {socialProviders.includes('github') && (
+                <button
+                  type="button"
+                  onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
+                  className="py-2 px-3 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700"
+                >
+                  GitHub
+                </button>
+              )}
+            </div>
+          </>
+        )}
         <p className="text-center text-sm text-slate-500 mt-4">
           Não tem conta?{' '}
           <Link href="/auth/register" className="text-primary-600 hover:underline">

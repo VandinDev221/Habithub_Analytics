@@ -15,7 +15,7 @@ Sistema web que permite rastrear hábitos, visualizar analytics preditivos e rec
 | **Banco de Dados** | PostgreSQL (principal), MongoDB (logs), Redis (cache) |
 | **IA** | TensorFlow.js / microserviço Python (predições) |
 | **Auth** | NextAuth.js (Google, GitHub) + JWT |
-| **DevOps** | Docker, GitHub Actions, Vercel (front), Railway/Render (back) |
+| **DevOps** | Docker, GitHub Actions, Vercel (front), Render (back) |
 
 ## Estrutura do Projeto
 
@@ -100,8 +100,8 @@ Documentação completa: **Swagger/OpenAPI** em `/api-docs`.
 ## Deploy
 
 - **Frontend**: Vercel (ex.: `habithub-analytics.vercel.app`)
-- **Backend**: Railway ou Render
-- **Bancos**: Neon (PostgreSQL), MongoDB Atlas, Redis (Upstash ou similar)
+- **Backend**: Render — ver **RENDER_DEPLOY.md**
+- **Bancos**: PostgreSQL no Render (ou Neon), MongoDB Atlas, Redis (Upstash ou similar)
 
 ### Deploy na Vercel
 

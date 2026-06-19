@@ -5,16 +5,33 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+const githubClientId = process.env.GITHUB_CLIENT_ID?.trim();
+const githubClientSecret = process.env.GITHUB_CLIENT_SECRET?.trim();
+
+const oauthProviders = [
+  ...(googleClientId && googleClientSecret
+    ? [
+        GoogleProvider({
+          clientId: googleClientId,
+          clientSecret: googleClientSecret,
+        }),
+      ]
+    : []),
+  ...(githubClientId && githubClientSecret
+    ? [
+        GitHubProvider({
+          clientId: githubClientId,
+          clientSecret: githubClientSecret,
+        }),
+      ]
+    : []),
+];
+
 export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    }),
-    GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID ?? '',
-      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? '',
-    }),
+    ...oauthProviders,
     CredentialsProvider({
       name: 'Email',
       credentials: {
@@ -44,8 +61,28 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, account }) {
+      if (account && (account.provider === 'google' || account.provider === 'github') && user?.email) {
+        try {
+          const res = await fetch(`${API_URL}/api/auth/oauth-user`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: user.email,
+              name: user.name,
+              avatar: user.image,
+              provider: account.provider,
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            token.userId = data.user?.id ?? user.id;
+            token.accessToken = data.token;
+          }
+        } catch {
+          // token sem accessToken — proxy/API falhará até novo login
+        }
+      } else if (user) {
         token.userId = user.id;
         token.accessToken = (user as { accessToken?: string }).accessToken ?? token.accessToken;
       }
@@ -59,7 +96,8 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async signIn({ user, account }) {
-      if (account?.provider === 'google' || account?.provider === 'github') {
+      if (account?.provider !== 'google' && account?.provider !== 'github') return true;
+      try {
         const res = await fetch(`${API_URL}/api/auth/oauth-user`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -70,13 +108,10 @@ export const authOptions: NextAuthOptions = {
             provider: account.provider,
           }),
         });
-        if (res.ok) {
-          const data = await res.json();
-          (user as { id?: string }).id = data.user?.id ?? user.id;
-          (user as { accessToken?: string }).accessToken = data.token;
-        }
+        return res.ok;
+      } catch {
+        return false;
       }
-      return true;
     },
   },
   session: { strategy: 'jwt', maxAge: 7 * 24 * 60 * 60 },
