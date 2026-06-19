@@ -44,7 +44,9 @@ export async function api<T>(
       res.status === 404
         ? ' Na Vercel: Settings → Root Directory = frontend → Save → Redeploy. Depois teste: ' + (typeof window !== 'undefined' ? window.location.origin : '') + '/api/register (deve retornar JSON, não 404).'
         : res.status === 502 || res.status === 503
-          ? ' Backend ou banco pode estar indisponível — confira Render (DATABASE_URL e migrações) e NEXT_PUBLIC_API_URL.'
+          ? /IA|GROQ|OPENAI|API_KEY/i.test(msg)
+            ? ''
+            : ' Backend ou banco pode estar indisponível — confira Render (DATABASE_URL e migrações) e NEXT_PUBLIC_API_URL.'
           : '';
     throw new Error(msg + hint);
   }

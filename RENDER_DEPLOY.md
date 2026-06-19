@@ -55,7 +55,14 @@ Guia detalhado: **[RENDER_DATABASE.md](./RENDER_DATABASE.md)**.
 | `FRONTEND_URL` | `https://habithub-analytics.vercel.app` |
 | `NODE_ENV` | `production` |
 
-Opcional: `OPENAI_API_KEY` (chat “Pergunte sobre seus hábitos”).
+Opcional — chat **“Pergunte sobre seus hábitos”** (Groq):
+
+| Key | Value |
+|-----|--------|
+| `GROQ_API_KEY` | chave em [console.groq.com](https://console.groq.com) → API Keys |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` (default) ou `llama-3.1-8b-instant` |
+
+Alternativa: `OPENAI_API_KEY` + `OPENAI_MODEL` (se não usar Groq).
 
 4. **Create Web Service** e aguarde **Live**.
 

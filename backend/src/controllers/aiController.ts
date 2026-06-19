@@ -66,9 +66,9 @@ export async function askQuestion(req: Request, res: Response, next: NextFunctio
     if (e instanceof AppError) return next(e);
     console.error('AI ask error:', e);
     const msg = e instanceof Error ? e.message : 'Erro desconhecido';
-    const isQuota = msg.includes('429') || msg.includes('quota') || msg.includes('billing');
+    const isQuota = msg.includes('429') || msg.includes('quota') || msg.includes('rate limit');
     const friendlyMessage = isQuota
-      ? 'Cota da API de IA excedida. Verifique plano e cobrança em platform.openai.com ou use outra chave.'
+      ? 'Limite da API de IA atingido. Aguarde um momento ou verifique sua cota em console.groq.com.'
       : process.env.NODE_ENV === 'production'
         ? 'Falha ao contactar o serviço de IA. Tente novamente.'
         : msg;

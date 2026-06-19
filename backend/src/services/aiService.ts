@@ -106,15 +106,39 @@ export function validateQuestion(body: unknown): string {
 }
 
 /**
- * Chama a OpenAI com contexto e pergunta; retorna a resposta em texto ou lança.
+ * Cliente LLM: Groq (preferido) ou OpenAI. Groq usa API compatível com OpenAI.
  */
-export async function askLLM(context: AskContext, question: string): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey?.trim()) {
-    throw new AppError(503, 'Serviço de IA indisponível. OPENAI_API_KEY não configurada.');
+function createLLMClient(): { client: OpenAI; model: string } {
+  const groqKey = process.env.GROQ_API_KEY?.trim();
+  if (groqKey) {
+    return {
+      client: new OpenAI({
+        apiKey: groqKey,
+        baseURL: 'https://api.groq.com/openai/v1',
+      }),
+      model: process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile',
+    };
   }
 
-  const openai = new OpenAI({ apiKey });
+  const openaiKey = process.env.OPENAI_API_KEY?.trim();
+  if (openaiKey) {
+    return {
+      client: new OpenAI({ apiKey: openaiKey }),
+      model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+    };
+  }
+
+  throw new AppError(
+    503,
+    'Serviço de IA indisponível. Defina GROQ_API_KEY no Render (console.groq.com → API Keys).'
+  );
+}
+
+/**
+ * Chama Groq/OpenAI com contexto e pergunta; retorna a resposta em texto ou lança.
+ */
+export async function askLLM(context: AskContext, question: string): Promise<string> {
+  const { client, model } = createLLMClient();
   const systemContent = `Você é um assistente de hábitos e produtividade. Responda em português do Brasil, de forma breve e motivadora (2 a 4 frases). Baseie-se APENAS nos dados do usuário fornecidos abaixo. Se os dados não forem suficientes para responder, diga isso de forma gentil e sugira registrar mais check-ins.
 
 Dados do usuário:
@@ -122,8 +146,8 @@ Dados do usuário:
 - ${context.statsSummary}
 - ${context.recentSummary}`;
 
-  const completion = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+  const completion = await client.chat.completions.create({
+    model,
     messages: [
       { role: 'system', content: systemContent },
       { role: 'user', content: question },
