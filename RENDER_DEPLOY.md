@@ -41,7 +41,7 @@ Guia detalhado: **[RENDER_DATABASE.md](./RENDER_DATABASE.md)**.
 |-------|--------|
 | **Root Directory** | `backend` |
 | **Runtime** | Node |
-| **Build Command** | `npm install && npm run build` |
+| **Build Command** | `npm install --include=dev && npm run build` |
 | **Start Command** | `npm run db:migrate && npm run start` |
 | **Health Check Path** | `/health` |
 
