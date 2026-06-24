@@ -101,6 +101,7 @@ Documentação completa: **Swagger/OpenAPI** em `/api-docs`.
 
 - **Frontend**: Vercel (ex.: `habithub-analytics.vercel.app`)
 - **Backend**: Render — ver **RENDER_DEPLOY.md**
+- **APK Android**: Capacitor em `mobile/` — ver **MOBILE_APK.md**
 - **Bancos**: PostgreSQL no Render (ou Neon), MongoDB Atlas, Redis (Upstash ou similar)
 
 ### Deploy na Vercel
