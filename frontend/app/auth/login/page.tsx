@@ -3,13 +3,15 @@
 import { signIn, getProviders } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useNativeApp } from '@/hooks/useNativeApp';
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
-  OAuthSignin: 'Falha ao iniciar login social. Na Vercel, confira GOOGLE_CLIENT_ID/SECRET e GITHUB_CLIENT_ID/SECRET (Settings → Environment Variables) e faça Redeploy.',
-  OAuthCallback: 'Falha ao concluir login social. Confira as URLs de callback no Google/GitHub.',
+  OAuthSignin: 'Falha ao iniciar login social. Confira GOOGLE_CLIENT_ID/SECRET e GITHUB_CLIENT_ID/SECRET na Vercel e faça Redeploy.',
+  OAuthCallback: 'Falha após autorizar no Google/GitHub. Confira as URLs de callback e NEXTAUTH_URL na Vercel.',
   OAuthAccountNotLinked: 'Este email já está vinculado a outro método de login.',
-  AccessDenied: 'Login cancelado ou negado.',
+  AccessDenied: 'Login social negado. No app Android, o Google costuma bloquear — use email/senha. No site, aguarde 1 min (Render) e tente de novo.',
   Configuration: 'Erro de configuração do NextAuth (NEXTAUTH_URL / NEXTAUTH_SECRET).',
+  Callback: 'Erro no retorno do Google/GitHub. Verifique callback URL no console do provedor.',
 };
 
 export default function LoginPage() {
@@ -18,6 +20,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [socialProviders, setSocialProviders] = useState<string[]>([]);
+  const isNative = useNativeApp();
 
   useEffect(() => {
     const oauthError = new URLSearchParams(window.location.search).get('error');
@@ -109,7 +112,15 @@ export default function LoginPage() {
               {socialProviders.includes('google') && (
                 <button
                   type="button"
-                  onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                  onClick={() => {
+                    if (isNative) {
+                      setError(
+                        'Login com Google não funciona dentro do app Android (bloqueio do Google). Use email/senha ou abra habithub-analytics.vercel.app no Chrome.'
+                      );
+                      return;
+                    }
+                    signIn('google', { callbackUrl: '/dashboard' });
+                  }}
                   className="py-2 px-3 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700"
                 >
                   Google
@@ -125,6 +136,11 @@ export default function LoginPage() {
                 </button>
               )}
             </div>
+            {isNative && (
+              <p className="text-xs text-slate-500 mt-2 text-center">
+                No APK, prefira <strong>email/senha</strong>. Google bloqueia login em apps embutidos.
+              </p>
+            )}
           </>
         )}
         <p className="text-center text-sm text-slate-500 mt-4">

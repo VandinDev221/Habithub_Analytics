@@ -5,6 +5,49 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
+/** URL do oauth-user: proxy na Vercel (servidor) evita timeout/CORS e usa o mesmo fluxo do cadastro. */
+function oauthUserEndpoint(): string {
+  const base = process.env.NEXTAUTH_URL?.replace(/\/$/, '');
+  if (base) return `${base}/api/oauth-user`;
+  return `${API_URL}/api/auth/oauth-user`;
+}
+
+async function syncOAuthUser(user: {
+  email?: string | null;
+  name?: string | null;
+  image?: string | null;
+}, provider: string): Promise<{ ok: boolean; userId?: string; token?: string; error?: string }> {
+  if (!user.email) return { ok: false, error: 'Email não retornado pelo provedor OAuth.' };
+  try {
+    const res = await fetch(oauthUserEndpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: user.email,
+        name: user.name,
+        avatar: user.image,
+        provider,
+      }),
+      signal: AbortSignal.timeout(90_000),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      return { ok: false, error: (err as { error?: string }).error ?? `Backend respondeu ${res.status}` };
+    }
+    const data = await res.json();
+    return { ok: true, userId: data.user?.id, token: data.token };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    const isTimeout = e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError');
+    return {
+      ok: false,
+      error: isTimeout
+        ? 'Servidor demorou (Render acordando). Aguarde 1 minuto e tente de novo.'
+        : msg,
+    };
+  }
+}
+
 const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
 const githubClientId = process.env.GITHUB_CLIENT_ID?.trim();
@@ -75,24 +118,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && (account.provider === 'google' || account.provider === 'github') && user?.email) {
-        try {
-          const res = await fetch(`${API_URL}/api/auth/oauth-user`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: user.email,
-              name: user.name,
-              avatar: user.image,
-              provider: account.provider,
-            }),
-          });
-          if (res.ok) {
-            const data = await res.json();
-            token.userId = data.user?.id ?? user.id;
-            token.accessToken = data.token;
-          }
-        } catch {
-          // token sem accessToken — proxy/API falhará até novo login
+        const synced = await syncOAuthUser(user, account.provider);
+        if (synced.ok) {
+          token.userId = synced.userId ?? user.id;
+          token.accessToken = synced.token;
         }
       } else if (user) {
         token.userId = user.id;
@@ -109,21 +138,11 @@ export const authOptions: NextAuthOptions = {
     },
     async signIn({ user, account }) {
       if (account?.provider !== 'google' && account?.provider !== 'github') return true;
-      try {
-        const res = await fetch(`${API_URL}/api/auth/oauth-user`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: user.email,
-            name: user.name,
-            avatar: user.image,
-            provider: account.provider,
-          }),
-        });
-        return res.ok;
-      } catch {
-        return false;
+      const synced = await syncOAuthUser(user, account.provider);
+      if (!synced.ok) {
+        throw new Error(synced.error ?? 'Falha ao sincronizar usuário com o backend.');
       }
+      return true;
     },
   },
   session: { strategy: 'jwt', maxAge: 7 * 24 * 60 * 60 },
