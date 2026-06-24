@@ -17,7 +17,10 @@
     "recharts": "^2.12.0",
     "date-fns": "^3.3.1",
     "clsx": "^2.1.0",
-    "lucide-react": "^0.312.0"
+    "lucide-react": "^0.312.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0",
+    "@capacitor/app": "^7.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",

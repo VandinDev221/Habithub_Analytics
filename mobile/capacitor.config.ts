@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Habithub Analytics',
   webDir: 'www',
   server: {
-    url: 'https://habithub-analytics.vercel.app',
+    url: 'https://habithub-analytics.vercel.app/auth/login',
     androidScheme: 'https',
     cleartext: false,
   },
@@ -21,7 +21,8 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: 'LIGHT',
-      backgroundColor: '#3b82f6',
+      backgroundColor: '#2563eb',
+      overlaysWebView: false,
     },
   },
 };
