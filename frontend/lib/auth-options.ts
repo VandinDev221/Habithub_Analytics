@@ -40,23 +40,35 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        const res = await fetch(`${API_URL}/api/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
-          }),
-        });
-        if (!res.ok) return null;
-        const data = await res.json();
-        return {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.name,
-          image: data.user.avatar,
-          accessToken: data.token,
-        };
+        try {
+          const res = await fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+            signal: AbortSignal.timeout(90_000),
+          });
+          if (res.status === 503) {
+            throw new Error('Banco ou servidor indisponível. Aguarde 1 minuto e tente de novo.');
+          }
+          if (!res.ok) return null;
+          const data = await res.json();
+          return {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name,
+            image: data.user.avatar,
+            accessToken: data.token,
+          };
+        } catch (e) {
+          if (e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError')) {
+            throw new Error('Servidor demorou para responder. O Render pode estar acordando — aguarde 1 minuto.');
+          }
+          if (e instanceof Error && e.message.includes('indisponível')) throw e;
+          return null;
+        }
       },
     }),
   ],

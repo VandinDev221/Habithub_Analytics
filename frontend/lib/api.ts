@@ -1,7 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
-const isProductionApi = API_URL.startsWith('https://');
 
-/** Em produção, cadastro/login vão direto ao backend (evita 404 na rota /api/register da Vercel). Em dev, usam proxy no mesmo domínio. */
+/** Rotas de auth usam proxy no mesmo domínio (Vercel) → backend Render. */
 const AUTH_PROXY_PATHS: Record<string, string> = {
   '/api/auth/register': '/api/register',
   '/api/auth/login': '/api/login',
@@ -9,7 +8,7 @@ const AUTH_PROXY_PATHS: Record<string, string> = {
 
 /**
  * useProxy: true = chama via /api/proxy/... (Next.js injeta o token do backend).
- * Register e login: em produção chamam o backend direto (NEXT_PUBLIC_API_URL); em dev usam /api/register e /api/login.
+ * Cadastro/login sempre usam proxy no mesmo domínio (evita CORS e cold start do Render no celular/APK).
  */
 export async function api<T>(
   path: string,
@@ -18,15 +17,11 @@ export async function api<T>(
   const { token, useProxy, ...init } = options;
   const proxyPath = AUTH_PROXY_PATHS[path];
   const isAuthPath = typeof proxyPath === 'string';
-  const useDirectBackend = isProductionApi && isAuthPath;
-  const baseUrl = useProxy ? '' : useDirectBackend ? API_URL : isAuthPath ? '' : API_URL;
   const url = useProxy
     ? `/api/proxy/${path.replace(/^\/api\//, '')}`
-    : useDirectBackend
-      ? `${API_URL}${path}`
-      : isAuthPath
-        ? proxyPath
-        : `${baseUrl}${path}`;
+    : isAuthPath
+      ? proxyPath
+      : `${API_URL}${path}`;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -46,7 +41,7 @@ export async function api<T>(
         : res.status === 502 || res.status === 503
           ? /IA|GROQ|OPENAI|API_KEY/i.test(msg)
             ? ''
-            : ' Backend ou banco pode estar indisponível — confira Render (DATABASE_URL e migrações) e NEXT_PUBLIC_API_URL.'
+            : ' Servidor ou banco pode estar acordando (Render free demora ~1 min). Tente de novo em instantes.'
           : '';
     throw new Error(msg + hint);
   }

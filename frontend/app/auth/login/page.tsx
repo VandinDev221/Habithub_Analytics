@@ -45,7 +45,11 @@ export default function LoginPage() {
     });
     setLoading(false);
     if (res?.error) {
-      setError('Email ou senha inválidos.');
+      const msg =
+        res.error === 'CredentialsSignin'
+          ? 'Email ou senha inválidos.'
+          : res.error;
+      setError(msg);
       return;
     }
     if (res?.ok) window.location.href = '/dashboard';

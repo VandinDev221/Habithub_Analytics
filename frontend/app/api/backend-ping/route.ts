@@ -31,12 +31,30 @@ export async function GET() {
       );
     }
     const data = await res.json().catch(() => ({}));
+
+    let database: { ok: boolean; tablesOk?: boolean; hint?: string | null } = { ok: false };
+    try {
+      const dbRes = await fetch(`${BACKEND_URL.replace(/\/$/, '')}/api/db-check`, {
+        method: 'GET',
+        cache: 'no-store',
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (dbRes.ok) {
+        const db = await dbRes.json();
+        database = { ok: db.connectionOk === true && db.tablesOk === true, tablesOk: db.tablesOk, hint: db.hint };
+      }
+    } catch {
+      database = { ok: false, hint: 'Não foi possível verificar o PostgreSQL.' };
+    }
+
     return NextResponse.json({
       ok: true,
       backend: true,
       backendStatus: data.status ?? 'ok',
       backendUrl: BACKEND_URL.replace(/\/$/, ''),
       checkedUrl: url,
+      database,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
